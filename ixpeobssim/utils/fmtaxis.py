@@ -58,6 +58,7 @@ class label:
     rate = axis_label('Rate', 'Hz')
     res_sigma = axis_label('Residuals', '$\\sigma$')
     pulls_sigma = axis_label('Pulls', '$\\sigma$')
+    met = axis_label('MET', 's')
 
 
 class fmtaxis:
@@ -83,3 +84,4 @@ class fmtaxis:
     pp_pol_ang_rad = dict(xlabel=label.phase, ylabel=label.pol_ang_rad)
     pp_pol_ang_deg = dict(xlabel=label.phase, ylabel=label.pol_ang_deg)
     pp_pol_ang = pp_pol_ang_deg
+    light_curve = dict(xlabel=label.met, ylabel=label.flux)
