@@ -31,6 +31,7 @@ from ixpeobssim.srcmodel.light_curve import load_light_curve_data
 from ixpeobssim.utils.time_ import string_to_met_utc
 from ixpeobssim.config import file_path_to_model_name
 from ixpeobssim.srcmodel.bkg import xPowerLawInstrumentalBkg
+from ixpeobssim.utils.logging_ import logger
 
 __model__ = file_path_to_model_name(__file__)
 
@@ -57,8 +58,11 @@ SWIFT_IMAGE_PATH = (os.path.join(IXPEOBSSIM_SRCMODEL, 'fits',
                    'grb221009a_swift_xrt_1p5_10_keV_image.fits'))
 
 def pl_norm():
-    idx = 1 - PL_INDEX
+    """ Conversion factor between the flux and the normalization of the power
+    law. Note that this is the unabsorbed flux."""
+    idx = 2 - PL_INDEX
     conversion_factor = idx / (SWIFT_FLUX_EMAX**idx - SWIFT_FLUX_EMIN**idx)
+    logger.info(f'Conversion factor from flux to PL norm = {conversion_factor}')
     def _pl_norm(t):
         return conversion_factor * swift_light_curve(t)
     return _pl_norm
@@ -81,19 +85,28 @@ bkg = xPowerLawInstrumentalBkg()
 ROI_MODEL.add_source(bkg)
 
 def display():
-    """Display the Chandra observation used to make the simulation
-    and the re
+    """Display he original light curve and image, as well as the power law
+    normalization as a function of time.
     """
     plt.figure(f'light curve {__model__}')
     swift_light_curve.plot(logx=True, logy=True, label='SWIFT LC')
-    plt.axvline(IXPE_OBS_MET)
-    plt.axvline(IXPE_OBS_MET + DURATION, label='IXPE obs')
+    plt.fill_betweenx(swift_light_curve.y, IXPE_OBS_MET, IXPE_OBS_MET + DURATION,
+                      color='lightblue', alpha=0.4, label='IXPE obs')
     plt.xlim((swift_light_curve.xmin(), swift_light_curve.xmax()))
+    top_xaxis = plt.gca().secondary_xaxis('top',
+            functions=(lambda x: x-SWIFT_OBS_MET, lambda x: x+SWIFT_OBS_MET))
+    top_xaxis.set_xlabel('Time since SWIFT trigger [s]')
     plt.legend()
+    plt.tight_layout()
+
     plt.figure(f'PL norm {__model__}')
     t_ = numpy.linspace(IXPE_OBS_MET, IXPE_OBS_MET + DURATION, 200)
     plt.plot(t_, pl_norm()(t_), 'o')
-    setup_gca(xlabel='MET[s]', ylabel='PL. Norm [Kev cm-2 s-1]')
+    setup_gca(xlabel='MET[s]', ylabel='PL. Norm [cm-2 s-1 keV-1]')
+    top_xaxis_2 = plt.gca().secondary_xaxis('top',
+            functions=(lambda x: x-SWIFT_OBS_MET, lambda x: x+SWIFT_OBS_MET))
+    top_xaxis_2.set_xlabel('Time since SWIFT trigger [s]')
+    plt.tight_layout()
 
 
 if __name__ == '__main__':
