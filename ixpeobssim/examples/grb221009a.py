@@ -30,8 +30,19 @@ def simulate():
                       startdate=input_model.IXPE_OBS_START,
                       emin=2., emax=8.)
 
+def select():
+    pipeline.xpselect(*pipeline.file_list(), emin=2., emax=8.,
+                      suffix='selected')
+
+def bin():
+    pipeline.xpbin(*pipeline.file_list('selected'), algorithm='LC')
+    pipeline.xpbin(*pipeline.file_list('selected'), algorithm='PHA1')
+    pipeline.xpbin(*pipeline.file_list('selected'), algorithm='CMAP')
+
 def run():
     simulate()
+    select()
+    bin()
 
 
 if __name__ == '__main__':
