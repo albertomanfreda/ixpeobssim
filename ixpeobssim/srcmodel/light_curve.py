@@ -29,7 +29,7 @@ from ixpeobssim.core.rand import xUnivariateGenerator, xUnivariateAuxGenerator
 from ixpeobssim.core.spline import xUnivariateSpline
 from ixpeobssim.utils.units_ import erg_to_keV
 from ixpeobssim.utils.logging_ import logger
-from ixpeobssim.utils.fmtaxis import fmtaxis
+from ixpeobssim.utils.fmtaxis import label
 
 # pylint: disable=invalid-name, too-many-arguments
 
@@ -67,5 +67,5 @@ def load_light_curve_data(file_path, time_column=0, flux_column=1,
     if erg:
         flux = erg_to_keV(flux)
     logger.info('Done, %d columns and %d rows read out.', len(data), time.size)
-    kwargs.update(fmtaxis.light_curve)
+    kwargs.update({'xlabel' : label.met, 'ylabel' : label.kev_energy_flux})
     return xUnivariateSpline(time, flux, **kwargs)

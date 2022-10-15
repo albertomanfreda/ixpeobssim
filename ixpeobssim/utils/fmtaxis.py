@@ -34,6 +34,8 @@ class units:
 
     flux = 'cm$^{-2}$ s$^{-1}$ keV$^{-1}$'
     norm_cnts = 's$^{-1}$ keV$^{-1}$'
+    erg_energy_flux = 'erg cm$^{-2}$ s$^{-1}$'
+    kev_energy_flux = 'keV cm$^{-2}$ s$^{-1}$'
 
 
 
@@ -44,6 +46,8 @@ class label:
 
     energy = axis_label('Energy', 'keV')
     flux = axis_label('Flux', units.flux)
+    erg_energy_flux = axis_label('Energy flux', units.erg_energy_flux)
+    kev_energy_flux = axis_label('Energy flux', units.kev_energy_flux)
     norm_cnts = axis_label('Normalized counts', units.norm_cnts)
     norm_cnts_I = axis_label('I Normalized counts', units.norm_cnts)
     norm_cnts_U = axis_label('U Normalized counts', units.norm_cnts)
@@ -84,4 +88,3 @@ class fmtaxis:
     pp_pol_ang_rad = dict(xlabel=label.phase, ylabel=label.pol_ang_rad)
     pp_pol_ang_deg = dict(xlabel=label.phase, ylabel=label.pol_ang_deg)
     pp_pol_ang = pp_pol_ang_deg
-    light_curve = dict(xlabel=label.met, ylabel=label.flux)
