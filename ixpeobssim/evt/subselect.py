@@ -23,11 +23,13 @@ from __future__ import print_function, division
 
 import numpy
 
+import regions
+
 from ixpeobssim.evt.event import xEventFile
 from ixpeobssim.instrument.mma import FIDUCIAL_BACKSCAL
-from ixpeobssim.utils.astro import angular_separation
+from ixpeobssim.utils.astro import angular_separation, ds9_region_area
 from ixpeobssim.utils.logging_ import logger, abort
-from ixpeobssim.utils.units_ import degrees_to_arcmin, arcmin_to_arcsec
+from ixpeobssim.utils.units_ import degrees_to_arcmin, arcmin_to_arcsec, degrees_to_arcsec
 
 
 # pylint: disable=invalid-name, too-many-locals
@@ -382,6 +384,17 @@ class xEventSelect:
             if self.get('reginvert'):
                 reg_mask = numpy.logical_not(reg_mask)
             mask *= reg_mask
+
+            _wcs = self.event_file._retrieve_wcs_info()
+            #cdelt = numpy.linalg.norm(_wcs_info.wcs.cdelt)
+            #phys_area = area_pix * arcmin_to_arcsec(cdelt)
+            ds9_region = regions.Regions.read(regfile)
+            reg_area = ds9_region_area(_wcs, *ds9_region)
+            print (reg_area)
+            input()
+
+            header_keywords['BACKSCAL'] = reg_area
+            
             # Need to understand how we calculate the area, in this case.
             #header_keywords.append(('BACKSCAL', )
 

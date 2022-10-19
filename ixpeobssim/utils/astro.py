@@ -31,6 +31,7 @@ import regions
 
 from ixpeobssim.utils.environment import REGIONS_VERSION
 from ixpeobssim.utils.logging_ import logger
+from ixpeobssim.utils.units_ import arcmin_to_degrees, degrees_to_arcsec
 
 
 # pylint: disable=invalid-name, no-member
@@ -64,7 +65,7 @@ def region_compound(*region_list, compound_mode='or'):
         return region_list[0]
     assert compound_mode in REGION_COMPOUND_OPERATORS
     return functools.reduce(REGION_COMPOUND_DICT[compound_mode], region_list[1:], region_list[0])
-
+ 
 
 def ds9_region_filter_xy(x, y, *region_list, compound_mode="or", invert=False, wcs_=None):
     """Check which the x and y sky coordinates of a series of events are inside
@@ -144,6 +145,27 @@ def ds9_region_filter_sky(ra, dec, wcs_, *region_list, compound_mode="or", inver
         mask = numpy.invert(mask)
     return mask
 
+def ds9_region_area(wcs_, *region_list, nside = 3600, compound_mode="or", invert=False):
+    '''Calculate the area of a sky region with hit and miss algorithm
+    '''
+    #size of the hit/miss area, in fractional degrees
+    extent = arcmin_to_degrees(10.)
+    ra0 = wcs_.wcs.crval[0]
+    dec0 = wcs_.wcs.crval[1]
+    # extract nside ra and nside dec uniformly distributed in crval+/-extent/2
+    ra_vec = ra0 + extent*(numpy.random.uniform(size = nside) - 0.5)
+    dec_vec = dec0 + extent*(numpy.random.uniform(size = nside) - 0.5)
+    #print (numpy.min(ra_vec), numpy.max(ra_vec))
+    #print (numpy.min(dec_vec), numpy.max(dec_vec))
+    #Filter the events with the region mask and sum them to get hits
+    contained = numpy.sum(ds9_region_filter_sky(ra_vec, dec_vec, wcs_, *region_list))
+    print (numpy.sum(contained))
+    input()
+    ratio = contained/nside**2 # Hit/tot
+    #Back to physical units of squared arcminutes
+    scaling = degrees_to_arcsec (extent)
+    physical_area = ratio * scaling
+    return (physical_area)
 
 def angular_separation(ra, dec, ra0, dec0):
     """Compute the angular separation (in decimal degrees) of an array of
