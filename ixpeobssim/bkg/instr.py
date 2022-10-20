@@ -36,7 +36,7 @@ from ixpeobssim.utils.units_ import arcmin_to_degrees
 
 
 
-def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-4, emin=0.1):
+def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-5, emin=0.32):
     """Create a background template model starting from a series of PHA1
     background files.
 
@@ -72,9 +72,9 @@ def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-4, emi
     """
     # The file name, at this point, is hard-coded---this can be made more
     # user-friendly in the future.
-    file_name = 'ixpe01903701_det%d_evt2_v02_bkg_pha1.fits'
+    file_name = 'ixpe01005701_det%d_evt2_v03_clean_bkg_pha1.fits'
     file_list = [os.path.join(IXPEOBSSIM_BKG_DATA, file_name % du_id) for du_id in DU_IDS]
-    output_file_name = 'bkg_smcx1_01903701.txt'
+    output_file_name = 'bkg_3c279_01005701.txt'
     output_file_path = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', output_file_name)
 
     # Load the raw count spectrum and convert PI channels in keV. Note we are
@@ -108,7 +108,7 @@ def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-4, emi
     # Create a non-interpolating spline---note that we are cutting at a minimum
     # energy to avoid the peak in channel 0.
     mask = energy > emin
-    spline = xUnivariateSpline(energy[mask], flux[mask], s=spline_smoothing)
+    spline = xUnivariateSpline(energy[mask], flux[mask], s=spline_smoothing, k=4)
     # Create the output text file with the spline data.
     logger.info('Writing output file to %s...', output_file_path)
     x = numpy.linspace(emin, energy.max(), 250)
@@ -120,8 +120,8 @@ def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-4, emi
 
     # Plotting stuff.
     ax1, ax2 = residual_plot('background template')
-    plt.errorbar(energy, flux, flux_err, fmt='o', label='SMC X-1 data (all DUs)')
-    spline.plot(zorder=3, label='Spline approximation')
+    plt.errorbar(energy, flux, flux_err, fmt='o', label='Background data (all DUs)')
+    spline.plot(zorder=5, label='Spline approximation')
     setup_gca(ylabel='Background rate [cm$^{-2}$ s$^{-1}$ keV$^{-1}$]', logy=True,
         grids=True, xmax=energy.max(), legend=True)
     plt.sca(ax2)
