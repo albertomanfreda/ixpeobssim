@@ -36,7 +36,7 @@ from ixpeobssim.utils.units_ import arcmin_to_degrees
 
 
 
-def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-5, emin=0.32):
+def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-5, emin=0.1):
     """Create a background template model starting from a series of PHA1
     background files.
 
