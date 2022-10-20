@@ -139,13 +139,13 @@ class TestEphemeris(unittest.TestCase):
         """Simple test, no frequency derivatives.
         """
         ephem = xEphemeris(1.e6, 0.13)
-        self._test_ephemeris_rvs(ephem, 'ephem 1', start_met=1.e5)
+        self._test_ephemeris_rvs(ephem, 'ephem 1', start_met=0)
 
-    @unittest.skip('Disengaged until we understand issue https://github.com/lucabaldini/ixpeobssim/issues/651')
+    #@unittest.skip('Disengaged until we understand issue https://github.com/lucabaldini/ixpeobssim/issues/651')
     def test_ephermeris_rvs2(self):
         """Standard test.
         """
-        ephem = xEphemeris(0., 0.13, 1.e-5, 1.e-9)
+        ephem = xEphemeris(0., 0.13, 1.e-10, 1.e-20)
         self._test_ephemeris_rvs(ephem, 'ephem 2', start_met=1.e5)
 
     def test_ephermeris_rvs3(self):

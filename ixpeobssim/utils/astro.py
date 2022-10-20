@@ -145,7 +145,7 @@ def ds9_region_filter_sky(ra, dec, wcs_, *region_list, compound_mode="or", inver
         mask = numpy.invert(mask)
     return mask
 
-def ds9_region_area(wcs_, *region_list, nside = 3600, compound_mode="or", invert=False):
+def ds9_region_area(wcs_, *region_list, nside = 648000, compound_mode="or", invert=False):
     '''Calculate the area of a sky region with hit and miss algorithm
     '''
     #size of the hit/miss area, in fractional degrees
@@ -155,15 +155,13 @@ def ds9_region_area(wcs_, *region_list, nside = 3600, compound_mode="or", invert
     # extract nside ra and nside dec uniformly distributed in crval+/-extent/2
     ra_vec = ra0 + extent*(numpy.random.uniform(size = nside) - 0.5)
     dec_vec = dec0 + extent*(numpy.random.uniform(size = nside) - 0.5)
-    #print (numpy.min(ra_vec), numpy.max(ra_vec))
-    #print (numpy.min(dec_vec), numpy.max(dec_vec))
     #Filter the events with the region mask and sum them to get hits
     contained = numpy.sum(ds9_region_filter_sky(ra_vec, dec_vec, wcs_, *region_list))
     print (numpy.sum(contained))
     input()
-    ratio = contained/nside**2 # Hit/tot
-    #Back to physical units of squared arcminutes
-    scaling = degrees_to_arcsec (extent)
+    ratio = contained/nside*2 # Hit/tot
+    #Back to physical units of squared arcseconds
+    scaling = degrees_to_arcsec(extent)**2
     physical_area = ratio * scaling
     return (physical_area)
 
