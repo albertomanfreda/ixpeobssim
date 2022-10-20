@@ -14,8 +14,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-"""First instrumental background parametrization based on actual data---a short
-observation of SMC X-1.
+"""Instrumental background parametrization based on the observation of 3C-279.
 """
 
 from __future__ import print_function, division
