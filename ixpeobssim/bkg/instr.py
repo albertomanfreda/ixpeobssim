@@ -18,6 +18,7 @@
 """
 
 from __future__ import print_function, division
+from operator import is_
 
 import os
 
@@ -36,7 +37,7 @@ from ixpeobssim.utils.units_ import arcmin_to_degrees
 
 
 
-def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-5, emin=0.1):
+def create_backgound_template(extraction_radius=1.2, spline_smoothing=7.e-5, emin=0.01):
     """Create a background template model starting from a series of PHA1
     background files.
 
@@ -72,9 +73,9 @@ def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-5, emi
     """
     # The file name, at this point, is hard-coded---this can be made more
     # user-friendly in the future.
-    file_name = 'ixpe01005701_det%d_evt2_v03_clean_bkg_pha1.fits'
+    file_name = 'ixpe01006301_det%d_evt2_v03_clean_bkg_pha1.fits'
     file_list = [os.path.join(IXPEOBSSIM_BKG_DATA, file_name % du_id) for du_id in DU_IDS]
-    output_file_name = 'bkg_3c279_01005701.txt'
+    output_file_name = 'bkg_bllac1_01005701.txt'
     output_file_path = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', output_file_name)
 
     # Load the raw count spectrum and convert PI channels in keV. Note we are
@@ -104,6 +105,7 @@ def create_backgound_template(extraction_radius=1.2, spline_smoothing=5.e-5, emi
     logger.info('Scaling factor: %.3e', scale)
     flux = rate * scale
     flux_err = rate_err * scale
+
 
     # Create a non-interpolating spline---note that we are cutting at a minimum
     # energy to avoid the peak in channel 0.
