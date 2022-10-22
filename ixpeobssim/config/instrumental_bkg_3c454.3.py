@@ -14,7 +14,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-"""Instrumental background parametrization based on the second observation of BL-Lac
+"""Instrumental background parametrization based on the first observation of 3c454.3
 """
 
 from __future__ import print_function, division
@@ -35,7 +35,7 @@ __model__ = file_path_to_model_name(__file__)
 
 RA = 45.
 DEC = 45.
-path_bllac = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', 'bkg_bllac2_01006701.txt')
+path_bllac = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', 'bkg_3c454.3_01005401.txt')
 
 
 bkg = xTemplateInstrumentalBkg(file_path = path_bllac)

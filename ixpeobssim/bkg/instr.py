@@ -73,9 +73,9 @@ def create_backgound_template(extraction_radius=1.2, spline_smoothing=7.e-5, emi
     """
     # The file name, at this point, is hard-coded---this can be made more
     # user-friendly in the future.
-    file_name = 'ixpe01006701_det%d_evt2_v02_clean_bkg_pha1.fits'
+    file_name = 'ixpe01005401_det%d_evt2_v02_clean_bkg_pha1.fits'
     file_list = [os.path.join(IXPEOBSSIM_BKG_DATA, file_name % du_id) for du_id in DU_IDS]
-    output_file_name = 'bkg_bllac2_01006701.txt'
+    output_file_name = 'bkg_3c454.3_01005401.txt'
     output_file_path = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', output_file_name)
 
     # Load the raw count spectrum and convert PI channels in keV. Note we are
