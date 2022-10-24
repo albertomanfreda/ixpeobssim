@@ -327,53 +327,62 @@ def add_model_strings(**kwargs):
         add_model_string(key, value)
 
 
+def clear_and_reset():
+    """ Reset XSPEC and clear the book-keeping dictionary.
+    """
+    reset()
+    _SPECTRUM_MANAGER.clear()
+
+def load_input_file(file_path, data_group):
+    """
+    """
+    _SPECTRUM_MANAGER.register(file_path, data_group)
+    logger.info('Loading binned count spectrum from %s...', file_path)
+    spectrum = xspec.Spectrum(file_path)
+
+    # At this point XSPEC has already looked into the RESPFILE e ANCRFILE
+    # keywords in the file header and assigned the corresponing response
+    # files to the spectrum. This might not be what the user wants if the
+    # paths are absolute paths on a different machine, in which case the
+    # spectrum will have no reponse associated and spectrum.response will
+    # raise an exception.
+
+    try:
+        spectrum.response
+    except:
+        logger.info('Spectrum response invalid, using local CALDB')
+
+        def _irf_path(file_path, irf_type):
+            """Small nested function to load a given response file
+            (identified by file name) from the local caldb, independently
+            from the absolute path specified in the binned PHA1 file header.
+            """
+            file_name = os.path.basename(file_path)
+            file_path = os.path.join(irf_folder_path(irf_type), file_name)
+            check_input_file(file_path)
+            logger.info('Using %s file %s...', irf_type, file_path)
+            return file_path
+
+        with fits.open(file_path) as hdu_list:
+            respfile = hdu_list['SPECTRUM'].header['RESPFILE']
+            ancrfile = hdu_list['SPECTRUM'].header['ANCRFILE']
+            spectrum.response = _irf_path(respfile, 'rmf')
+            if ancrfile.endswith('arf'):
+                spectrum.response.arf = _irf_path(ancrfile, 'arf')
+            if ancrfile.endswith('mrf'):
+                spectrum.response.arf = _irf_path(ancrfile, 'mrf')
+            if ancrfile.endswith('modf'):
+                spectrum.response.arf = _irf_path(ancrfile, 'modf')
+    return spectrum
+
 def load_input_files(*file_list):
     """Read a set of PHA1 input files and create the corresponding
     xspec.Spectrum objects.
     """
-    # Reset XSPEC and clear the book-keeping dictionary.
-    reset()
-    _SPECTRUM_MANAGER.clear()
+    clear_and_reset()
     logger.info('Loading input files...')
     for i, file_path in enumerate(file_list):
-        _SPECTRUM_MANAGER.register(file_path, i + 1)
-        logger.info('Loading binned count spectrum from %s...', file_path)
-        spectrum = xspec.Spectrum(file_path)
-
-        # At this point XSPEC has already looked into the RESPFILE e ANCRFILE
-        # keywords in the file header and assigned the corresponing response
-        # files to the spectrum. This might not be what the user wants if the
-        # paths are absolute paths on a different machine, in which case the
-        # spectrum will have no reponse associated and spectrum.response will
-        # raise an exception.
-
-        try:
-            spectrum.response
-        except:
-            logger.info('Spectrum response invalid, using local CALDB')
-
-            def _irf_path(file_path, irf_type):
-                """Small nested function to load a given response file
-                (identified by file name) from the local caldb, independently
-                from the absolute path specified in the binned PHA1 file header.
-                """
-                file_name = os.path.basename(file_path)
-                file_path = os.path.join(irf_folder_path(irf_type), file_name)
-                check_input_file(file_path)
-                logger.info('Using %s file %s...', irf_type, file_path)
-                return file_path
-
-            with fits.open(file_path) as hdu_list:
-                respfile = hdu_list['SPECTRUM'].header['RESPFILE']
-                ancrfile = hdu_list['SPECTRUM'].header['ANCRFILE']
-                spectrum.response = _irf_path(respfile, 'rmf')
-                if ancrfile.endswith('arf'):
-                    spectrum.response.arf = _irf_path(ancrfile, 'arf')
-                if ancrfile.endswith('mrf'):
-                    spectrum.response.arf = _irf_path(ancrfile, 'mrf')
-                if ancrfile.endswith('modf'):
-                    spectrum.response.arf = _irf_path(ancrfile, 'modf')
-
+        load_input_file(file_path, i + 1)
     logger.info('Done, %d file(s) loaded.', len(file_list))
 
 
