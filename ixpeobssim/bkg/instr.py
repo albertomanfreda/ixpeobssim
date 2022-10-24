@@ -69,7 +69,7 @@ def create_backgound_template(spline_smoothing=7.e-5, emin=0.01):
     emin : float
         The minimum energy for the spline.
     """
-    
+
     # The file name, at this point, is hard-coded---this can be made more
     # user-friendly in the future.
     #file_name = 'ixpe01005401_det%d_evt2_v02_clean_bkg_pha1.fits'
@@ -78,32 +78,38 @@ def create_backgound_template(spline_smoothing=7.e-5, emin=0.01):
     logger.info (f'loading background spectra from {file_list}...')
     output_file_name = 'bkg_all.txt'
     output_file_path = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', output_file_name)
-    livetime_total = 0
 
     # Loop over all input background files:
     # Load the raw count spectrum and convert PI channels in keV. 
     # Calculate the scaling factors and convert in proper units
+    livetime_total = 0
     for file in file_list:
         spec = xBinnedCountSpectrum.from_file_list([file])
         # Load the livetime and divide all quantities for weighted average
         livetime = spec.spectrum_header['LIVETIME']
         backscal = spec.spectrum_header['BACKSCAL']
+        # Rate * livetime = total signal
         spec.RATE *= livetime
-        # Higher livetime => more weight
         spec.STAT_ERR *= livetime
         livetime_total += livetime
-        # Divide by the surface normalized to detector area
+        # Divide by the fraction of the total area
         logger.info('Correcting for the extraction radius...')
-        logger.info (f'Scaling factor: {FIDUCIAL_BACKSCAL / backscal}')
-        spec.RATE *= FIDUCIAL_BACKSCAL / backscal
-        spec.STAT_ERR *= FIDUCIAL_BACKSCAL / backscal
+        area_frac = backscal / FIDUCIAL_BACKSCAL
+        logger.info (f'Fraction of the total area: {area_frac}')
+        spec.RATE /= area_frac
+        spec.STAT_ERR /= area_frac
         if 'avg_spec' in locals():
             avg_spec += spec        
         else:
             avg_spec = spec
+        plt.loglog(channel_to_energy(spec.CHANNEL),spec.RATE / livetime, ls = '', marker ='o', label = f'{file}')
+    plt.loglog(channel_to_energy(avg_spec.CHANNEL),avg_spec.RATE / livetime_total, label = f'mean')
+    plt.legend()
+    plt.show()
 
     
     # Scale the single object for the overall livetime
+    # Integrated signal / total livetime = rate again
     logger.info (f'scaling back for the total livetime of {livetime_total}')
     avg_spec.RATE /= livetime_total
     avg_spec.STAT_ERR /= livetime_total
