@@ -40,7 +40,7 @@ from astropy.io import fits
 
 
 
-def create_backgound_template(extraction_radius=1.2, spline_smoothing=7.e-5, emin=0.1):
+def create_backgound_template(spline_smoothing=7.e-5, emin=0.01):
     """Create a background template model starting from a series of PHA1
     background files.
 
@@ -49,20 +49,15 @@ def create_backgound_template(extraction_radius=1.2, spline_smoothing=7.e-5, emi
     with a specified radius---the latter is used internally to reascale the
     rate to the full detector surface.
 
-    The count spectrum, normalized by the fiducial area of the detector and
-    by the bin width, is then parametrized with a non interpolated spline and
-    written to file to be used later.
+    The count spectrum, normalized by the backscal, the fiducial area of the 
+    detector and by the bin width, is then parametrized with a non interpolated
+    spline and written to file to be used later.
 
     The output file is written on a regular energy grid as a simple text file
     with two columns---energy and background rate.
 
     Args
     ----
-    extraction_radius : float
-        The extraction radius used to cut the point source out in the underlying
-        PHA1 file---this is used to normalize the rate to the full detector
-        surface.
-
     spline_smoothing : float
         The smoothing coefficient ("s" argument in the scipy documentation) used
         for the non interpolating spline. Note this is very important, as it
@@ -74,6 +69,7 @@ def create_backgound_template(extraction_radius=1.2, spline_smoothing=7.e-5, emi
     emin : float
         The minimum energy for the spline.
     """
+    
     # The file name, at this point, is hard-coded---this can be made more
     # user-friendly in the future.
     #file_name = 'ixpe01005401_det%d_evt2_v02_clean_bkg_pha1.fits'

@@ -16,8 +16,9 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-"""nstrumental background parametrization based on actual data --- average of 
-a large number of observations of faint sources.
+"""Instrumental background parametrization based on actual data excised of reducible
+background from a few of observations of faint point-like sources: bllac, 3c269, 
+3c454.3.
 """
 
 from __future__ import print_function, division
