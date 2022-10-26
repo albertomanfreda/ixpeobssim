@@ -17,8 +17,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 """Instrumental background parametrization based on actual data excised of reducible
-background from a few of observations of faint point-like sources: bllac, 3c269, 
-3c454.3.
+background from a few of observations of faint point-like: bllac and 3c279.
 """
 
 from __future__ import print_function, division
@@ -39,10 +38,10 @@ __model__ = file_path_to_model_name(__file__)
 
 RA = 45.
 DEC = 45.
-path_3c279 = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', 'bkg_all.txt')
+path_mean_bkg = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', 'bkg_all.txt')
 
 
-bkg = xTemplateInstrumentalBkg(file_path = path_3c279)
+bkg = xTemplateInstrumentalBkg(file_path = path_mean_bkg)
 
 ROI_MODEL = xROIModel(RA, DEC, bkg)
 
