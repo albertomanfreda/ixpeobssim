@@ -102,7 +102,7 @@ def create_backgound_template(spline_smoothing=7.e-5, emin=0.01):
             avg_spec += spec        
         else:
             avg_spec = spec
-        plt.loglog(channel_to_energy(spec.CHANNEL),spec.RATE / livetime, ls = '', marker ='o', label = f'{file}')
+        plt.loglog(channel_to_energy(spec.CHANNEL),spec.RATE / livetime, ls = '', marker ='o', markersize = 1, label = f'{file}')
     plt.loglog(channel_to_energy(avg_spec.CHANNEL),avg_spec.RATE / livetime_total, label = f'mean')
     plt.legend()
     plt.show()
