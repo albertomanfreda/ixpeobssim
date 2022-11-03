@@ -74,9 +74,9 @@ def create_backgound_template(spline_smoothing=7.e-5, emin=0.01):
     # user-friendly in the future.
     #file_name = 'ixpe01005401_det%d_evt2_v02_clean_bkg_pha1.fits'
     #file_list = [os.path.join(IXPEOBSSIM_BKG_DATA, file_name % du_id) for du_id in DU_IDS]
-    file_list = glob(f'{IXPEOBSSIM_BKG_DATA}/*clean_bkg_pha1.fits')
+    file_list = glob(f'{IXPEOBSSIM_BKG_DATA}/*picorr_clean_bkg_pha1.fits')
     logger.info (f'loading background spectra from {file_list}...')
-    output_file_name = 'bkg_all.txt'
+    output_file_name = 'bkg_bllac1_01005701.txt'
     output_file_path = os.path.join(IXPEOBSSIM_SRCMODEL, 'ascii', output_file_name)
 
     # Loop over all input background files:
@@ -102,8 +102,10 @@ def create_backgound_template(spline_smoothing=7.e-5, emin=0.01):
             avg_spec += spec        
         else:
             avg_spec = spec
-        plt.loglog(channel_to_energy(spec.CHANNEL),spec.RATE / livetime, linewidth = 1, label = f'{file}')
-    plt.loglog(channel_to_energy(avg_spec.CHANNEL),avg_spec.RATE / livetime_total, linewidth = 2, label = f'mean')
+        plt.loglog(channel_to_energy(spec.CHANNEL),spec.RATE / livetime, linewidth = 1)
+    plt.loglog(channel_to_energy(avg_spec.CHANNEL),avg_spec.RATE / livetime_total, linewidth = 4, label = f'mean')
+    plt.xlabel('Energy [keV]')
+    plt.ylabel('Background spectrum')
     plt.legend()
     plt.show()
 
